@@ -65,16 +65,24 @@ def registrarVendas():
     res = {'status': 'ok'}
     return jsonify(res)
 
-@app.route('/verificaVendas/<id>', methods=['GET'])
-def verificaVendas(id):
+@app.route('/totalVendasCliente/<id>', methods=['GET'])
+def totalVendasCliente(id):
     id = int(id)
+    usuario = []
     acumulador = 0
     for i in vendas:
         if i.getId() == id:
             acumulador += i.getTotalVendas()
+    usuario = {'id': id, 'Total': acumulador}
+    return jsonify(usuario)
 
-    res = {'totalVendas': acumulador}
-    return jsonify(res)
+@app.route('/todosClientes', methods = ['GET'])
+def todosClientes():
+        clientes = []
+        for i in cliente:
+                c = {'id': i.getId(), 'nome': i.getNome()}
+                clientes.append(c)
+        return jsonify(clientes)
 
 
 
