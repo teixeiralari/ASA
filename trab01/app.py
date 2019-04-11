@@ -78,11 +78,11 @@ def totalVendasCliente(id):
 
 @app.route('/todosClientes', methods = ['GET'])
 def todosClientes():
-        clientes = []
-        for i in cliente:
-                c = {'id': i.getId(), 'nome': i.getNome()}
-                clientes.append(c)
-        return jsonify(clientes)
+    clientes = []
+    for i in cliente:
+        c = {'id': i.getId(), 'nome': i.getNome()}
+        clientes.append(c)
+    return jsonify(clientes)
 
 
 
