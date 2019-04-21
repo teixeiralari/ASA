@@ -1,0 +1,55 @@
+import psycopg2
+from psycopg2 import Error
+
+with open('/home/lariteixeira/ASA/password.txt') as f:
+        password = f.read().strip()
+
+class Categorias:
+    schema = "schema.sql"
+    connection = psycopg2.connect(user = "postgres",
+                                password = password,
+                                host = "127.0.0.1",
+                                port = "5432",
+                                database = "asa")
+    
+    cursor = connection.cursor()
+
+    def createTable(self): 
+        try:        
+            create_table_query = '''CREATE TABLE gestao.categorias 
+                (id_categoria SERIAL PRIMARY KEY, 
+                tituloCategoria VARCHAR(60),
+                descricaoCategoria VARCHAR(200),
+                fg_ativo INT default 1); '''
+            # cursor, connection = connect()
+            self.cursor.execute(create_table_query)
+            self.connection.commit()
+            self.cursor.close()
+            self.connection.close()
+            res = True
+        except (Exception, psycopg2.Error) as error :
+            if(self.connection):
+                print("Failed to create table", error) 
+            res = False
+        return res
+    
+    def addNovaCategoria(self, tituloCategoria, descricaoCategoria):
+        try:
+            insert_table_query = '''INSERT INTO gestao.categorias (tituloCategoria, 
+            descricaoCategoria) VALUES (%s, %s)'''
+            values = (tituloCategoria, descricaoCategoria)
+            self.cursor.execute(insert_table_query, values)
+            self.connection.commit()
+            count = self.cursor.rowcount
+            print (count, "Record inserted successfully into table")
+            self.endConnection()
+            res = True
+        except (Exception, psycopg2.Error) as error :
+            if(self.connection):
+                print("Failed to insert record into table", error) 
+            res = False
+        return res
+    
+    def endConnection(self):
+        self.cursor.close()
+        self.connection.close()
