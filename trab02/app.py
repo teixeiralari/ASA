@@ -195,10 +195,69 @@ def api_addVendasdb():
     taxaLucro = decimal.Decimal(0.8)
     
     for p in preco:
-        print(type(p))
         valorTotal += (1 + taxaLucro) * p * quantidade 
     if(dbVendas.addNovaVenda(id_vendedor, id_produto, id_categoria, dataVenda, valorTotal, quantidade)):
         result = {"result": "Dados inseridos com sucesso"}
     else:
         result = {"result": "Problemas para inserir os dados"}
     return jsonify(result) 
+
+
+@app.route('/allfornecedordb', methods = ['GET'])
+def api_allfornecedor():
+    allfornecedor = []
+    fornecedores = Fornecedores().allFornecedores()
+    for i in fornecedores:
+        f = {'id_fornecedor': i[0], 'cnpj': i[1], 'razaoSocial': i[2], 'telefone': i[3], 'endereco': i[4], 'contato': i[5]}
+        allfornecedor.append(f)
+    Fornecedores().endConnection()
+    return jsonify(allfornecedor)
+
+@app.route('/allvendedordb', methods = ['GET'])
+def api_allvendedor():
+    allVendedores =  []
+    vendedor = Vendedores().allVendedores()
+    for i in vendedor:
+        f = {'id_vendedor': i[0], 'cpf': i[1], 'nome': i[2], 'carteiraTrabalho': i[3], 'telefone': i[4], 'dataAdmissao': i[5]}
+        allVendedores.append(f)
+    return jsonify(allVendedores)
+
+@app.route('/allcategoriasdb', methods = ['GET'])
+def api_allcategorias():
+    allcategorias =  []
+    categorias = Categorias().allCategoria()
+    for i in categorias:
+        f = {'id_categoria': i[0], 'tituloCategoria': i[1], 'descricaoCategoria': i[2]}
+        allcategorias.append(f)
+    return jsonify(allcategorias)
+
+@app.route('/allprodutosdb', methods = ['GET'])
+def api_allprodutos():
+    allprodutos =  []
+    produtos = Produtos().allProdutos()
+    for i in produtos:
+        f = {'id_categoria': i[0], 'tituloCategoria': i[1], 'descricaoCategoria': i[2]}
+        allprodutos.append(f)
+    return jsonify(allprodutos)
+
+@app.route('/allcomprasdb', methods = ['GET'])
+def api_allcompras():
+    allcompras =  []
+    compras = Compras().allCompras()
+    for i in compras:
+        f = {'id_compra': i[0], 'id_fornecedor': i[1], 'id_produto': i[2], 'id_categoria': i[3],
+        'dataCompra': i[4], 'valorTotal': float(i[5]), 'quantidade': i[6]}
+        allcompras.append(f)
+    return jsonify(allcompras)
+
+@app.route('/allvendasdb', methods = ['GET'])
+def api_allvendas():
+    allvendas =  []
+    vendas = Vendas().allVendas()
+    for i in vendas:
+        f = {'id_venda': i[0], 'id_vendedor': i[1], 'id_produto': i[2], 'id_categoria': i[3],
+        'dataVenda': i[4], 'valorTotal': float(i[5]), 'quantidade': i[6]}
+        allvendas.append(f)
+    return jsonify(allvendas)
+
+

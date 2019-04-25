@@ -50,6 +50,12 @@ class Categorias:
             res = False
         return res
     
+    def allCategoria(self):
+        select_query = 'select * from gestao.categorias'
+        self.cursor.execute(select_query)
+        categorias = self.cursor.fetchall() 
+        return categorias
+        
     def endConnection(self):
         self.cursor.close()
         self.connection.close()

@@ -25,7 +25,6 @@ class Vendas:
                 valorTotal NUMERIC,
                 quantidade INT,
                 fg_ativo INT default 1); '''
-            # cursor, connection = connect()
             self.cursor.execute(create_table_query)
             self.connection.commit()
             self.cursor.close()
@@ -53,7 +52,13 @@ class Vendas:
                 print("Failed to insert record into table", error) 
             res = False
         return res
-
+        
+    def allVendas(self):
+        select_query = 'select * from gestao.vendas'
+        self.cursor.execute(select_query)
+        vendas = self.cursor.fetchall() 
+        return vendas
+    
     def endConnection(self):
         self.cursor.close()
         self.connection.close()

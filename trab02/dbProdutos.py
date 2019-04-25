@@ -60,6 +60,12 @@ class Produtos:
         self.cursor.execute(select_query)
         preco = self.cursor.fetchone() 
         return preco
+
+    def allProdutos(self):
+        select_query = 'select * from gestao.produtos'
+        self.cursor.execute(select_query)
+        produtos = self.cursor.fetchall() 
+        return produtos
     
     def endConnection(self):
         self.cursor.close()

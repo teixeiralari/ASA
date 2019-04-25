@@ -52,17 +52,13 @@ class Fornecedores:
             res = False
         return res
     
+    def allFornecedores(self):
+        select_query = 'select * from gestao.fornecedores'
+        self.cursor.execute(select_query)
+        fornecedores = self.cursor.fetchall() 
+        return fornecedores
+    
     def endConnection(self):
         self.cursor.close()
         self.connection.close()
     
-#     def getUsuario(self):
-#         select_query = "select * from cadastro.usuarios"
-#         self.cursor.execute(select_query)
-#         self.connection.commit()
-#         usuario = self.cursor.fetchall() 
-#         return usuario
-    
-#     def endConnection(self):
-#         self.cursor.close()
-#         self.connection.close()

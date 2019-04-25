@@ -61,6 +61,11 @@ class Compras:
         preco = self.cursor.fetchone() 
         return preco
 
+    def allCompras(self):
+        select_query = 'select * from gestao.compras'
+        self.cursor.execute(select_query)
+        compras = self.cursor.fetchall() 
+        return compras
 
     def endConnection(self):
         self.cursor.close()

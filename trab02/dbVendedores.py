@@ -53,6 +53,13 @@ class Vendedores:
             res = False
         return res
     
+    def allVendedores(self):
+        select_query = 'select * from gestao.vendedores'
+        self.cursor.execute(select_query)
+        vendedores = self.cursor.fetchall() 
+        return vendedores
+         
+    
     def endConnection(self):
         self.cursor.close()
         self.connection.close()
