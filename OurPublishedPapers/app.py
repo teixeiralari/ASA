@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt 
 from forms import *
-from db_config import myconfig
+from dbUtils import DbUtils
 from functools import wraps
 
 
@@ -20,10 +20,11 @@ def about():
 
 @app.route('/articles')
 def articles():
-    db = create_engine(myconfig)
-    query = "select * from myflaskapp.articles"
-    articles = db.execute(query)
-    if articles is not None:
+    
+    dbUtils = DbUtils()
+    articles = dbUtils.select_all_articles()
+    
+    if len(articles) > 0:
         return render_template('articles.html', articles=articles)
     else:
         msg = 'No articles found'
@@ -31,9 +32,9 @@ def articles():
 
 @app.route('/article/<string:id>/')
 def article(id):
-    db = create_engine(myconfig)
-    query = "select * from myflaskapp.articles where id = %s"
-    article = db.execute(query, [id]).fetchone()
+    
+    dbUtils = DbUtils()
+    article = dbUtils.select_article_by_id(id)
     return render_template('article.html', article=article)
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -45,10 +46,9 @@ def register():
         username = form.username.data
         password = sha256_crypt.encrypt(str(form.pwd.data))
 
-        db = create_engine(myconfig)
-        query = "insert into myflaskapp.users(name, email, username, password) VALUES (%s, %s, %s, %s)"
-        values = (name, email, username, password)
-        db.execute(query, values)
+        dbUtils = DbUtils()
+        dbUtils.new_user(name, email, username, password)
+
         flash('You are now registered and can log in', 'success')
 
         redirect(url_for('login'))
@@ -61,11 +61,10 @@ def login():
         username = request.form['username']
         possible_password = request.form['password']
 
-        db = create_engine(myconfig)
-        query = "select * from myflaskapp.users where username = %s"
-        values = [username]
-        result = db.execute(query, values).fetchone()
-        
+        dbUtils = DbUtils()
+        result = dbUtils.select_user(username)
+
+
         if (result is not None) and (len(result) > 0):
             #Get stored hash
             password = result['password']
@@ -107,18 +106,12 @@ def logout():
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
-    db = create_engine(myconfig)
-    query = "select name from myflaskapp.users where username=%s"
-    values = [session['username']]
-    user = db.execute(query, values).fetchone()
-
-
-    db = create_engine(myconfig)
-    query = "select * from myflaskapp.articles where author = %s"
-    values = user['name']
-    articles = db.execute(query, values)
-
-    if articles is not None:
+    
+    dbUtils = DbUtils()
+    user = dbUtils.select_user(session['username'])
+    articles = dbUtils.select_article_by_author(user['name'])
+    print(len(articles))
+    if len(articles) > 0:
         return render_template('dashboard.html', articles=articles)
     else:
         msg = 'No articles found'
@@ -127,22 +120,16 @@ def dashboard():
 @app.route('/add_article', methods=['GET', 'POST'])
 @is_logged_in
 def add_articles():
-    db = create_engine(myconfig)
-    query = "select name from myflaskapp.users where username=%s"
-    values = [session['username']]
-    user = db.execute(query, values).fetchone()
+
+    dbUtils = DbUtils()
+    user = dbUtils.select_user(session['username'])
 
     print(user['name'])
     form = ArticleForm(request.form)
     if request.method == 'POST' and form.validate():
         title = form.title.data
         body = form.body.data
-        
-        print(body)
-        db = create_engine(myconfig)
-        query = "insert into myflaskapp.articles(title, body, author) VALUES (%s, %s, %s)"
-        values = (title, body, user['name'])
-        db.execute(query, values)
+        dbUtils.new_article(title, body, user['name'])
         flash('Article created', 'success')
         return redirect(url_for('dashboard'))
     return render_template('add_article.html', form=form)
@@ -150,9 +137,9 @@ def add_articles():
 @app.route('/edit_article/<string:id>', methods=['GET', 'POST'])
 @is_logged_in
 def edit_articles(id):
-    db = create_engine(myconfig)
-    query = "select * from myflaskapp.articles where id = %s"
-    article = db.execute(query, [id]).fetchone()
+
+    dbUtils = DbUtils()
+    article = dbUtils.select_article_by_id(id)
 
     form = ArticleForm(request.form)
 
@@ -163,11 +150,9 @@ def edit_articles(id):
         title = request.form['title']
         body = request.form['body']
         
-        db = create_engine(myconfig)
-        query = "update myflaskapp.articles set title=%s, body=%s where id=%s"
 
-        values = (title, body, id)
-        db.execute(query, values)
+        dbUtils.update_article(id, title, body)
+    
         flash('Article update', 'success')
         return redirect(url_for('dashboard'))
     return render_template('edit_article.html', form=form)
@@ -175,9 +160,9 @@ def edit_articles(id):
 @app.route('/delete_article/<string:id>', methods=['POST'])
 @is_logged_in
 def delete_article(id):
-    db = create_engine(myconfig)
-    query = "delete from myflaskapp.articles where id=%s"
-    db.execute(query, [id])
+    
+    dbUtils = DbUtils()
+    dbUtils.delete_article(id)
 
     flash('Article deleted', 'success')
     return redirect(url_for('dashboard'))
