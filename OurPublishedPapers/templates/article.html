@@ -2,7 +2,7 @@
 
 {% block body %}
     <h1>{{article.title}}</h1>
-    <h5>Written by {{article.author}} on {{article.create_date}}</h5>
+    <h5>Written by {{article.author}} on {{article.create_date.strftime( '%y-%m-%d' )}}</h5>
     <hr>
 
     <div>

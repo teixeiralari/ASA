@@ -22,4 +22,4 @@ htmlcov/
 .coverage.*
 *,cover
 password.txt
-myFlaskapp/dbUtils.py
+
