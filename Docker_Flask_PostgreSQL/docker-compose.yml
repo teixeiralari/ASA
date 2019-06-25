@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  
+  db:
+    build: ./db
+    ports:
+      - "5432:5432"
+    env_file: .env
+
+  web:
+    build: ./web
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./web/:/usr/src/app
+    links: 
+      - db 
+

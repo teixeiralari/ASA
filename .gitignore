@@ -22,4 +22,7 @@ htmlcov/
 .coverage.*
 *,cover
 password.txt
+Docker_Flask_PostgreSQL/.env
+Docker_Flask_PostgreSQL/web/_config.py
+Docker_Flask_PostgreSQL/web/__pycache__
 

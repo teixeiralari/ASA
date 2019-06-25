@@ -1,0 +1,9 @@
+Flask
+Flask-Migrate
+SQLAlchemy
+Flask-WTF
+decorator
+passlib
+psycopg2
+WTForms
+Flask-SQLAlchemy
